@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemView"
+    android:layout_width="match_parent"
+    android:layout_height="68dp"
+    android:layout_marginTop="10dp"
+    app:cardBackgroundColor="@color/colorLightBlue"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="0dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/homeListIcon"
+            android:layout_width="52dp"
+            android:layout_height="wrap_content"
+            android:maxWidth="52dp"
+            android:maxHeight="52dp"
+            android:src="@drawable/empty_image"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:riv_corner_radius="12dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/homeListIcon"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/homeListTitle"
+                style="@style/stockItemSymbolAndPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="6dp"
+                app:drawableEndCompat="@drawable/selector_favourite"
+                tools:text="YNDX" />
+
+            <TextView
+                android:id="@+id/homeListName"
+                style="@style/stockItemName"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                tools:text="Yandex.LLC" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/homeListPrice"
+                style="@style/stockItemSymbolAndPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                tools:text="4764.6 p" />
+
+            <TextView
+                android:id="@+id/homeListPriceChanges"
+                style="@style/stockItemAdditionalPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="+56 p (1.15%)" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

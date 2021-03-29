@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowBackground">@color/white</item>
+    </style>
+
+    <style name="autoscroll">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:scrollHorizontally">true</item>
+    </style>
+
+    <style name="searchedItems">
+        <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_light</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="comments">
+        <item name="android:textColor">@color/colorGray</item>
+        <item name="fontFamily">@font/montserrat_light</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="searchTint">
+        <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_light</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="searchFragmentTitle">
+        <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="stockItemSymbolAndPrice">
+        <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="newsTitle">
+        <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="lightGrayMassage">
+        <item name="android:textColor">@color/colorGray</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="stockItemAdditionalPrice">
+        <item name="android:textColor">@color/colorGreen</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="stockItemName">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="date">
+        <item name="android:textColor">@color/colorGray</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="chartButtons">
+        <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+</resources>

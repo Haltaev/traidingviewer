@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_marginTop="8dp"
+    android:id="@+id/viewStockProgress"
+    android:layout_height="wrap_content">
+
+    <ProgressBar
+        android:id="@+id/stockProgressBar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:indeterminateTint="@color/colorGray"
+        android:layout_gravity="center" />
+
+</FrameLayout>
