@@ -10,7 +10,4 @@ interface PopularTickerDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(name: PopularTickers)
-
-    @Delete
-    suspend fun deleteTicker(name: PopularTickers)
 }

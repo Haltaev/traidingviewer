@@ -14,11 +14,13 @@ import com.traidingviewer.data.api.model.FavoriteStock
 import com.traidingviewer.data.api.model.HomeStock
 import com.traidingviewer.data.api.model.StockResponse
 import com.traidingviewer.data.db.dao.SymbolDao
-import com.traidingviewer.ui.BaseFragment
+import com.traidingviewer.ui.base.BaseFragment
+import com.traidingviewer.ui.base.BaseState
 import com.traidingviewer.ui.home.viewpagers.HomePagesAdapter
 import com.traidingviewer.ui.home.viewpagers.OnItemClickListener
 import com.traidingviewer.ui.info.TickerInfoFragment
 import kotlinx.android.synthetic.main.fragment_home_list.*
+import kotlinx.android.synthetic.main.view_progress.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,8 +54,8 @@ class StockFragment : BaseFragment(),
         super.onStart()
         observeViewModel(viewModel)
         if (stockTickers.isEmpty()) {
-            showProgressBar()
-            viewModel.getStocks()
+            showProgressBar(progressBar)
+            viewModel.loadStocks()
         }
     }
 
@@ -87,9 +89,8 @@ class StockFragment : BaseFragment(),
                     <= firstVisibleItem + visibleThreshold
                 ) {
                     showRecyclerProgress()
-                    viewModel.getStocksInfo(
-                        baseStockList.subList(startPoint, getNewEndPoint(startPoint)),
-                        symbolDao
+                    viewModel.loadStocksInfo(
+                        baseStockList.subList(startPoint, getNewEndPoint(startPoint))
                     )
                     loading = true
                 }
@@ -99,50 +100,36 @@ class StockFragment : BaseFragment(),
 
     private fun observeViewModel(viewModel: StockViewModel) {
         viewModel.apply {
-            stockListLiveData.observe(viewLifecycleOwner, Observer {
-                if (it != null) {
-                    when (it) {
-                        is StockState.Success -> {
-                            baseStockList = it.stocks
-                            getStocksInfo(
-                                baseStockList.subList(startPoint, getNewEndPoint(startPoint)),
-                                symbolDao
+            stockListLiveData.observe(viewLifecycleOwner, Observer { state ->
+                when (state) {
+                    is BaseState.Success -> {
+                        state.body?.let {
+                            baseStockList = it
+                            loadStocksInfo(
+                                baseStockList.subList(startPoint, getNewEndPoint(startPoint))
                             )
                         }
-                        StockState.Failure.UnknownHostException -> {
-                            hideProgressBar()
-                            showToast(R.string.error_unknown_host)
-                        }
-                        StockState.Failure.LimitExceeded -> {
-                            hideProgressBar()
-                            showToast(R.string.error_limit_exceeded)
-                        }
-                        StockState.Failure.OtherError -> {
-                            hideProgressBar()
-                            showToast(R.string.error_some_error)
-                        }
                     }
-                    stockListLiveData.postValue(null)
+                    is BaseState.Failure -> {
+                        hideProgressBar(progressBar)
+                        showErrorToasts(state)
+                    }
                 }
             })
-            listStockInfoLiveData.observe(viewLifecycleOwner, Observer {
-                if (it != null) {
-                    hideProgressBar()
-                    when (it) {
-                        is StocksInfoState.Success -> {
-                            if (stockTickers.isNotEmpty()) hideRecyclerProgress()
-                            stockTickers.addAll(it.stocksInfo)
-                            startPoint = getNewEndPoint(startPoint) + 1
-                            pagerRecyclerView.adapter?.notifyDataSetChanged()
+            listStockInfoLiveData.observe(viewLifecycleOwner, Observer { state ->
+                if (state != null) {
+                    hideProgressBar(progressBar)
+                    when (state) {
+                        is BaseState.Success -> {
+                            state.body?.let {
+                                if (stockTickers.isNotEmpty()) hideRecyclerProgress()
+                                stockTickers.addAll(it)
+                                startPoint = getNewEndPoint(startPoint) + 1
+                                pagerRecyclerView.adapter?.notifyDataSetChanged()
+                            }
                         }
-                        StocksInfoState.Failure.UnknownHostException -> {
-                            showToast(R.string.error_unknown_host)
-                        }
-                        StocksInfoState.Failure.LimitExceeded -> {
-                            showToast(R.string.error_limit_exceeded)
-                        }
-                        StocksInfoState.Failure.OtherError -> {
-                            showToast(R.string.error_some_error)
+                        is BaseState.Failure -> {
+                            showErrorToasts(state)
                         }
                     }
                     listStockInfoLiveData.postValue(null)
@@ -151,21 +138,8 @@ class StockFragment : BaseFragment(),
         }
     }
 
-    override fun onStop() {
-        removeObservers(viewModel)
-        viewModel.cancelAll()
-        super.onStop()
-    }
-
-    private fun removeObservers(viewModel: StockViewModel) {
-        viewModel.apply {
-            listStockInfoLiveData.removeObservers(viewLifecycleOwner)
-            stockListLiveData.removeObservers(viewLifecycleOwner)
-        }
-    }
-
     fun showRecyclerProgress() {
-        stockTickers.add(HomeStock())
+        stockTickers.add(HomeStock.EMPTY_HOME_STOCK)
         pagerRecyclerView.adapter?.notifyDataSetChanged()
     }
 
@@ -177,14 +151,6 @@ class StockFragment : BaseFragment(),
         internal fun newInstance(): StockFragment {
             return StockFragment()
         }
-    }
-
-    private fun showProgressBar() {
-        circularProgressBar.visibility = View.VISIBLE
-    }
-
-    private fun hideProgressBar() {
-        circularProgressBar.visibility = View.GONE
     }
 
     private fun getNewEndPoint(lastEndPoint: Int): Int {
@@ -203,23 +169,11 @@ class StockFragment : BaseFragment(),
     }
 
     override fun onFavoriteStarClickListener(item: HomeStock, state: Boolean) {
-        if (state) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                symbolDao.insert(
-                    FavoriteStock(
-                        item.symbol,
-                        item.name ?: ""
-                    )
-                )
-            }
-        } else {
-            viewLifecycleOwner.lifecycleScope.launch {
-                symbolDao.deleteTicker(
-                    FavoriteStock(
-                        item.symbol,
-                        item.name ?: ""
-                    )
-                )
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (state) {
+                symbolDao.insert(FavoriteStock(item.symbol, item.name))
+            } else {
+                symbolDao.deleteTicker(FavoriteStock(item.symbol, item.name))
             }
         }
     }

@@ -30,7 +30,7 @@ class HomePagesAdapter(
                 } else {
                     itemView.setCardBackgroundColor(resources.getColor(R.color.white, null))
                 }
-                if (!item.logo.isNullOrBlank()) {
+                if (!item.logo.isBlank()) {
                     Picasso.get().load(item.logo).into(homeListIcon)
                 } else {
                     homeListIcon.setImageDrawable(
@@ -48,14 +48,14 @@ class HomePagesAdapter(
                 homeListPriceChanges.text =
                     resources.getString(R.string.price_, item.difference, item.percent)
                 homeListPriceChanges.setTextColor(
-                    if (item.difference!!.contains('-')) {
+                    if (item.difference.contains('-')) {
                         resources.getColor(R.color.colorRed, null)
                     } else {
                         resources.getColor(R.color.colorGreen, null)
                     }
                 )
                 itemView.setOnClickListener {
-                    callback.onItemClickListener(item.symbol, item.name ?: "", item.isFavorite)
+                    callback.onItemClickListener(item.symbol, item.name, item.isFavorite)
                 }
                 homeListTitle.setOnClickListener {
                     item.isFavorite = !item.isFavorite
@@ -68,12 +68,12 @@ class HomePagesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        if (viewType == TICKER_ITEM) {
-            return ViewHolder(
+        return if (viewType == TICKER_ITEM) {
+            ViewHolder(
                 layoutInflater.inflate(R.layout.item_home_list, parent, false)
             )
         } else {
-            return ProgressViewHolder(
+            ProgressViewHolder(
                 layoutInflater.inflate(R.layout.view_progress, parent, false)
             )
         }

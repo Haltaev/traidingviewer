@@ -6,11 +6,14 @@ import com.traidingviewer.data.api.model.FavoriteStock
 @Dao
 interface SymbolDao {
     @Query("SELECT * FROM favorites")
-    suspend fun loadAllSymbols(): List<FavoriteStock>
+    suspend fun getAllFavoriteSymbols(): List<FavoriteStock>
+
+    @Query("SELECT * FROM favorites WHERE favorites.symbol = :symbol")
+    suspend fun isFavorite(symbol: String): FavoriteStock?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(symbol: FavoriteStock)
+    suspend fun insert(ticker: FavoriteStock)
 
     @Delete
-    suspend fun deleteTicker(symbol: FavoriteStock)
+    suspend fun deleteTicker(ticker: FavoriteStock)
 }

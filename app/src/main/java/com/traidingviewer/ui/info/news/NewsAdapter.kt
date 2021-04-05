@@ -12,9 +12,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class NewsAdapter(
-    private val items: List<CompanyNewsResponse>
+    private val items: List<CompanyNewsResponse>,
+    private val callback: OnNewsLinkClickListener
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    var lastOpenedItemPosition = -1
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
@@ -35,7 +38,15 @@ class NewsAdapter(
             newsTitle.text = item.title
             newsBody.text = item.text
             newsLink.text = item.url
+            newsLink.setOnClickListener {
+                callback.onNewsLinkClickListener(item.url)
+            }
             newsLayout.setOnClickListener {
+                if(position != lastOpenedItemPosition && lastOpenedItemPosition != -1) {
+                    items[lastOpenedItemPosition].isPicked = false
+                    notifyItemChanged(lastOpenedItemPosition)
+                }
+                lastOpenedItemPosition = position
                 item.isPicked = !item.isPicked
                 notifyItemChanged(position)
             }

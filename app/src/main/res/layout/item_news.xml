@@ -79,10 +79,9 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="20dp"
-            android:autoLink="web"
+            style="@style/link"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColorLink="@color/colorLink"
             tools:text="https://www.businessinsider.com/how-to-disable-comments-on-youtube" />
 
         <ImageView

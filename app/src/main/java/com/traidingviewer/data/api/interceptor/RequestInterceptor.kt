@@ -14,6 +14,6 @@ class RequestInterceptor : Interceptor {
     }
 
     companion object {
-        const val API_KEY = "71879ea95772d7359d261d39ee2e4453"
+        const val API_KEY = "10e368b6d26392459d78bb4d21b4d4f3"
     }
 }

@@ -22,7 +22,8 @@ import com.traidingviewer.data.db.dao.PopularTickerDao
 import com.traidingviewer.data.db.dao.SearchedTickersDao
 import com.traidingviewer.data.db.dao.SymbolDao
 import com.traidingviewer.data.db.entities.SearchedTickers
-import com.traidingviewer.ui.BaseFragment
+import com.traidingviewer.ui.base.BaseFragment
+import com.traidingviewer.ui.base.BaseState
 import com.traidingviewer.ui.home.viewpagers.HomePagesAdapter
 import com.traidingviewer.ui.home.viewpagers.OnItemClickListener
 import com.traidingviewer.ui.info.TickerInfoFragment
@@ -32,13 +33,6 @@ import javax.inject.Inject
 
 class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClickListener {
 
-    private lateinit var viewModel: SearchViewModel
-    private var exampleTickersAdapter: SearchAdapter? = null
-    private var searchResultAdapter: HomePagesAdapter? = null
-    var searchedString = ""
-
-    val handlerSearch = Handler(Looper.getMainLooper())
-
     @Inject
     lateinit var searchedTickersDao: SearchedTickersDao
 
@@ -47,6 +41,14 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
 
     @Inject
     lateinit var symbolDao: SymbolDao
+
+    private var imm: InputMethodManager? = null
+    private lateinit var viewModel: SearchViewModel
+    private var exampleTickersAdapter: SearchAdapter? = null
+    private var searchResultAdapter: HomePagesAdapter? = null
+    var searchedString = ""
+
+    val handlerSearch = Handler(Looper.getMainLooper())
 
     override fun getLayoutId(): Int {
         return R.layout.fragment_search
@@ -61,8 +63,7 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
     override fun onResume() {
         super.onResume()
         searchEditText.requestFocus()
-        val imm: InputMethodManager? =
-            getSystemService<InputMethodManager>(requireContext(), InputMethodManager::class.java)
+        imm = getSystemService<InputMethodManager>(requireContext(), InputMethodManager::class.java)
         imm?.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
     }
 
@@ -84,8 +85,9 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
                 handlerSearch.removeCallbacksAndMessages(null)
                 if (s.toString().isNotBlank()) {
                     if (s.toString().length > searchedString.length) searchedString = s.toString()
-                    Handler(Looper.getMainLooper())
+                    handlerSearch
                         .postDelayed({
+                            changeStateSearchProgress(true)
                             viewModel.searchStocks(s.toString())
                         }, 700)
                 } else {
@@ -104,6 +106,11 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
                 searchEditText.text.clear()
             }
         }
+    }
+
+    fun changeStateSearchProgress(toShow: Boolean) {
+        if (toShow) searchProgressBar.visibility = View.VISIBLE
+        else searchProgressBar.visibility = View.GONE
     }
 
     private fun reverseList(list: List<String>): List<String> {
@@ -138,16 +145,27 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
     private fun observeViewModel(viewModel: SearchViewModel) {
         viewModel.apply {
             searchedStockLiveData.observe(viewLifecycleOwner, Observer { resp ->
+                changeStateSearchProgress(false)
                 when (resp) {
-                    is SearchState.Success -> {
-                        setResultList(resp.stocks)
+                    is BaseState.Success -> {
+                        resp.body?.let {
+                            if (it.isNotEmpty()) setResultList(it)
+                            else showEmptySearchResult()
+                        }
                     }
-                    SearchState.Failure.NothingToShow -> {
-                        showEmptySearchResult()
+                    is BaseState.Failure -> {
+                        showErrorToasts(resp)
                     }
-                    SearchState.Failure.LimitExceeded -> showToast(R.string.error_limit_exceeded)
-                    SearchState.Failure.UnknownHostException -> showToast(R.string.error_unknown_host)
-                    SearchState.Failure.OtherError -> showToast(R.string.error_some_error)
+                }
+            })
+            searchingListResultLiveData.observe(viewLifecycleOwner, Observer { resp ->
+                when (resp) {
+                    is BaseState.Success -> {
+                    }
+                    is BaseState.Failure -> {
+                        changeStateSearchProgress(false)
+                        showErrorToasts(resp)
+                    }
                 }
             })
         }
@@ -188,14 +206,16 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
     override fun onFavoriteStarClickListener(item: HomeStock, state: Boolean) {
         viewLifecycleOwner.lifecycleScope.launch {
             if (state) {
-                symbolDao.insert(FavoriteStock(item.symbol, item.name ?: ""))
+                symbolDao.insert(FavoriteStock(item.symbol, item.name))
             } else {
-                symbolDao.deleteTicker(FavoriteStock(item.symbol, item.name ?: ""))
+                symbolDao.deleteTicker(FavoriteStock(item.symbol, item.name))
             }
         }
     }
 
     override fun onStop() {
+        handlerSearch.removeCallbacksAndMessages(null)
+        imm?.hideSoftInputFromWindow(view?.windowToken, 0)
         viewLifecycleOwner.lifecycleScope.launch {
             if (searchedString.isNotBlank() && !searchedTickersDao.loadAllSearchedTickers()
                     .contains(searchedString)
@@ -208,6 +228,7 @@ class SearchFragment : BaseFragment(), OnItemClickListener, OnSearchQueriesClick
 
     override fun onSearchQueryClickListener(query: String) {
         searchEditText.setText(query)
+        changeStateSearchProgress(true)
         viewModel.searchStocks(query)
         viewLifecycleOwner.lifecycleScope.launch {
             if (searchedTickersDao.loadAllSearchedTickers().contains(query)) {

@@ -6,58 +6,65 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/tickerInfoBackButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_margin="18dp"
-            android:padding="8dp"
+            android:padding="18dp"
             android:src="@drawable/ic_back"
             tools:ignore="ContentDescription" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tickerInfoSymbol"
+            style="@style/stockItemSymbolAndPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:orientation="vertical">
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@id/tickerInfoFavorite"
+            android:layout_toEndOf="@id/tickerInfoBackButton"
+            android:gravity="center"
+            android:textStyle="bold"
+            tools:text="AAPL" />
 
-            <TextView
-                android:id="@+id/tickerInfoSymbol"
-                style="@style/stockItemSymbolAndPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                tools:text="AAPL" />
-
-            <TextView
-                android:id="@+id/tickerInfoName"
-                style="@style/stockItemName"
-                android:gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:textStyle="bold"
-                tools:text="Apple Inc." />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tickerInfoName"
+            style="@style/stockItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tickerInfoBackButton"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="6dp"
+            android:layout_toStartOf="@id/tickerInfoFavorite"
+            android:layout_toEndOf="@id/tickerInfoBackButton"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textStyle="bold"
+            tools:text="Apple Inc." />
 
         <ImageView
             android:id="@+id/tickerInfoFavorite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="18dp"
+            android:padding="12dp"
             android:src="@drawable/selector_info_favourite"
             tools:ignore="ContentDescription" />
 
-    </FrameLayout>
+    </RelativeLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tickerInfoTabs"

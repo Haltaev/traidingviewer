@@ -1,12 +1,25 @@
 package com.traidingviewer.data.api.model
 
-class HomeStock {
-    var name: String? = null
-    var symbol: String = ""
-    var currentPrice: String? = null
-    var difference: String? = null
-    var percent: String? = null
-    var currency: String? = null
-    var logo: String? = null
+class HomeStock(
+    val name: String,
+    val symbol: String,
+    val currentPrice: String,
+    val difference: String,
+    val percent: String,
+    val currency: String,
+    val logo: String
+) {
     var isFavorite: Boolean = false
+
+    companion object {
+        val EMPTY_HOME_STOCK = HomeStock(
+            name = "",
+            symbol = "",
+            currentPrice = "",
+            difference = "",
+            percent = "",
+            currency = "",
+            logo = ""
+        )
+    }
 }

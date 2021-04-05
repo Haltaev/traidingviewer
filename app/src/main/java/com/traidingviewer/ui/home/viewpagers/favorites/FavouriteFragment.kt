@@ -3,7 +3,6 @@ package com.traidingviewer.ui.home.viewpagers.favorites
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewTreeViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.traidingviewer.App
@@ -13,11 +12,13 @@ import com.traidingviewer.common.injectViewModel
 import com.traidingviewer.data.api.model.FavoriteStock
 import com.traidingviewer.data.api.model.HomeStock
 import com.traidingviewer.data.db.dao.SymbolDao
-import com.traidingviewer.ui.BaseFragment
+import com.traidingviewer.ui.base.BaseFragment
+import com.traidingviewer.ui.base.BaseState
 import com.traidingviewer.ui.home.viewpagers.HomePagesAdapter
 import com.traidingviewer.ui.home.viewpagers.OnItemClickListener
 import com.traidingviewer.ui.info.TickerInfoFragment
 import kotlinx.android.synthetic.main.fragment_home_list.*
+import kotlinx.android.synthetic.main.view_progress.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,11 +47,11 @@ class FavouriteFragment : BaseFragment(),
         super.onResume()
         viewLifecycleOwner.lifecycleScope.launch {
             observeViewModel(viewModel)
-            if(symbolDao.loadAllSymbols().isEmpty()) {
+            if (symbolDao.getAllFavoriteSymbols().isEmpty()) {
                 emptyFavoriteMassage.visibility = View.VISIBLE
                 pagerRecyclerView.visibility = View.GONE
             } else {
-                showProgressBar()
+                showProgressBar(progressBar)
                 emptyFavoriteMassage.visibility = View.GONE
                 pagerRecyclerView.visibility = View.VISIBLE
                 viewModel.getFavoritesInfo(symbolDao)
@@ -68,33 +69,21 @@ class FavouriteFragment : BaseFragment(),
     private fun observeViewModel(viewModel: FavoriteViewModel) {
         viewModel.apply {
             listFavoritesInfoLiveData.observe(viewLifecycleOwner, Observer { state ->
-                hideProgressBar()
+                hideProgressBar(progressBar)
                 when (state) {
-                    is FavoritesInfoState.Success -> {
-                        favoriteTickers.clear()
-                        favoriteTickers.addAll(state.stocksInfo)
-                        pagerRecyclerView.adapter?.notifyDataSetChanged()
+                    is BaseState.Success -> {
+                        state.body?.let {
+                            favoriteTickers.clear()
+                            favoriteTickers.addAll(it)
+                            pagerRecyclerView.adapter?.notifyDataSetChanged()
+                        }
                     }
-                    FavoritesInfoState.Failure.UnknownHostException -> {
-                        showToast(R.string.error_unknown_host)
-                    }
-                    FavoritesInfoState.Failure.LimitExceeded -> {
-                        showToast(R.string.error_limit_exceeded)
-                    }
-                    FavoritesInfoState.Failure.OtherError -> {
-                        showToast(R.string.error_some_error)
+                    is BaseState.Failure -> {
+                        showErrorToasts(state)
                     }
                 }
             })
         }
-    }
-
-    private fun showProgressBar() {
-        circularProgressBar.visibility = View.VISIBLE
-    }
-
-    private fun hideProgressBar() {
-        circularProgressBar.visibility = View.GONE
     }
 
     companion object {
@@ -113,13 +102,11 @@ class FavouriteFragment : BaseFragment(),
     }
 
     override fun onFavoriteStarClickListener(item: HomeStock, state: Boolean) {
-        if (state) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                symbolDao.insert(FavoriteStock(item.symbol, item.name ?: ""))
-            }
-        } else {
-            viewLifecycleOwner.lifecycleScope.launch {
-                symbolDao.deleteTicker(FavoriteStock(item.symbol, item.name ?: ""))
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (state) {
+                symbolDao.insert(FavoriteStock(item.symbol, item.name))
+            } else {
+                symbolDao.deleteTicker(FavoriteStock(item.symbol, item.name))
             }
         }
     }

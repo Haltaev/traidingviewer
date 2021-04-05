@@ -2,14 +2,14 @@ package com.traidingviewer.di.module
 
 import android.content.Context
 import com.readystatesoftware.chuck.ChuckInterceptor
+import com.traidingviewer.data.api.ApiService
+import com.traidingviewer.data.api.interceptor.RequestInterceptor
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import com.traidingviewer.data.api.ApiService
-import com.traidingviewer.data.api.interceptor.RequestInterceptor
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -35,7 +35,6 @@ class NetworkModule {
         val builder = OkHttpClient.Builder()
             .addInterceptor(requestInterceptor)
             .addInterceptor(ChuckInterceptor(context))
-            .addInterceptor(requestInterceptor)
             .readTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
             .connectTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(REQUEST_TIMEOUT, TimeUnit.SECONDS)

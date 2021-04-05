@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tickerInfoButtonsLayout"
-        android:layout_marginTop="40dp"
+        android:paddingTop="40dp"
         android:layout_marginBottom="20dp" />
 
     <LinearLayout
@@ -29,11 +29,9 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:background="@drawable/selector_rounded_corner"
-            android:enabled="false"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/one_day"
-            android:textColor="@color/white" />
+            android:text="@string/one_day" />
 
         <TextView
             android:id="@+id/buttonW"

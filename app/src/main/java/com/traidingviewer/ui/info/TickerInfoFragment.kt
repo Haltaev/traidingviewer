@@ -16,7 +16,7 @@ import com.traidingviewer.App
 import com.traidingviewer.R
 import com.traidingviewer.data.api.model.FavoriteStock
 import com.traidingviewer.data.db.dao.SymbolDao
-import com.traidingviewer.ui.BaseFragment
+import com.traidingviewer.ui.base.BaseFragment
 import com.traidingviewer.ui.info.chart.ChartFragment
 import com.traidingviewer.ui.info.news.NewsFragment
 import com.traidingviewer.utils.ConvertUtils

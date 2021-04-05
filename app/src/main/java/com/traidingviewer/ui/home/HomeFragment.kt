@@ -14,7 +14,7 @@ import com.google.android.material.tabs.TabLayout
 import com.traidingviewer.App
 import com.traidingviewer.MainActivity
 import com.traidingviewer.R
-import com.traidingviewer.ui.BaseFragment
+import com.traidingviewer.ui.base.BaseFragment
 import com.traidingviewer.ui.home.viewpagers.favorites.FavouriteFragment
 import com.traidingviewer.ui.home.viewpagers.stock.StockFragment
 import com.traidingviewer.ui.search.SearchFragment

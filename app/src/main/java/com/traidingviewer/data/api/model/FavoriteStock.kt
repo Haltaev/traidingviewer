@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "favorites")
-class FavoriteStock (
+class FavoriteStock(
     @PrimaryKey
     @ColumnInfo(name = "symbol")
     val symbol: String,

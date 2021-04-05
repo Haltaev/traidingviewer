@@ -20,7 +20,8 @@ class MyMarkerView(context: Context) :
         highlight: Highlight
     ) {
         marker_date.text = (e as? MyEntry)?.chart?.date?.toDate()
-        marker_price.text = (e as? MyEntry)?.chart?.price.toString()
+        marker_price.text =
+            context.resources.getString(R.string.usd_, (e as? MyEntry)?.chart?.price.toString())
 
         super.refreshContent(e, highlight)
     }
@@ -29,14 +30,18 @@ class MyMarkerView(context: Context) :
         val inputDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale("EN"))
         val inputDateFormatWithoutTime = SimpleDateFormat("yyyy-MM-dd", Locale("EN"))
         val outputDateFormat = SimpleDateFormat("d MMM yy HH:mm", Locale("EN"))
-        val outputDateFormatWithoutTime = SimpleDateFormat("d MMM yy HH:mm", Locale("EN"))
+        val outputDateFormatWithoutTime = SimpleDateFormat("d MMM yy", Locale("EN"))
 
         return try {
             val date = inputDateFormat.parse(this ?: "")
             if (date != null) outputDateFormat.format(date) else ""
         } catch (e: Exception) {
-            val date = inputDateFormatWithoutTime.parse(this ?: "")
-            if (date != null) outputDateFormatWithoutTime.format(date) else ""
+            try {
+                val date = inputDateFormatWithoutTime.parse(this ?: "")
+                if (date != null) outputDateFormatWithoutTime.format(date) else ""
+            } catch (e: Exception) {
+                ""
+            }
         }
     }
 

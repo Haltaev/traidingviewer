@@ -5,25 +5,14 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pagerRecyclerView"
+        android:id="@+id/newsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:clipToPadding="false"
         android:paddingBottom="20dp"
-        tools:listitem="@layout/item_home_list" />
-
-    <TextView
-        android:id="@+id/emptyFavoriteMassage"
-        style="@style/lightGrayMassage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="20dp"
-        android:gravity="center_horizontal"
-        android:text="@string/nothing_to_show_add_tickers_to_favorites_for_easier_access"
-        android:visibility="gone" />
+        tools:listitem="@layout/item_news" />
 
     <include layout="@layout/view_progress" />
 

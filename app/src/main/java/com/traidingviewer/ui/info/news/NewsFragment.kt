@@ -7,17 +7,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.traidingviewer.R
 import com.traidingviewer.common.injectViewModel
 import com.traidingviewer.data.api.model.CompanyNewsResponse
-import com.traidingviewer.ui.BaseFragment
-import kotlinx.android.synthetic.main.fragment_home_list.*
+import com.traidingviewer.ui.base.BaseFragment
+import com.traidingviewer.ui.base.BaseState
+import kotlinx.android.synthetic.main.fragment_news_list.*
+import kotlinx.android.synthetic.main.view_progress.*
 
-class NewsFragment : BaseFragment() {
+class NewsFragment : BaseFragment(), OnNewsLinkClickListener {
 
     private var adapter: NewsAdapter? = null
     var ticker = ""
     private lateinit var viewModel: NewsViewModel
 
     override fun getLayoutId(): Int {
-        return R.layout.fragment_home_list
+        return R.layout.fragment_news_list
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,41 +34,29 @@ class NewsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        showProgressBar()
+        showProgressBar(progressBar)
         observeViewModel(viewModel)
         viewModel.getNews(ticker)
     }
 
-    private fun showProgressBar() {
-        circularProgressBar.visibility = View.VISIBLE
-    }
-
-    private fun hideProgressBar() {
-        circularProgressBar.visibility = View.GONE
-    }
-
     private fun setAdapter(items: List<CompanyNewsResponse>) {
-        adapter = NewsAdapter(items)
-        pagerRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        pagerRecyclerView.adapter = adapter
+        adapter = NewsAdapter(items, this)
+        newsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        newsRecyclerView.adapter = adapter
     }
 
     private fun observeViewModel(viewModel: NewsViewModel) {
         viewModel.apply {
-            newsLiveData.observe(viewLifecycleOwner, Observer {
-                hideProgressBar()
-                when (it) {
-                    is NewsState.Success -> {
-                        setAdapter(it.news)
+            newsLiveData.observe(viewLifecycleOwner, Observer { state ->
+                hideProgressBar(progressBar)
+                when (state) {
+                    is BaseState.Success -> {
+                        state.body?.let {
+                            setAdapter(it)
+                        }
                     }
-                    NewsState.Failure.UnknownHostException -> {
-                        showToast(R.string.error_unknown_host)
-                    }
-                    NewsState.Failure.LimitExceeded -> {
-                        showToast(R.string.error_limit_exceeded)
-                    }
-                    NewsState.Failure.OtherError -> {
-                        showToast(R.string.error_some_error)
+                    is BaseState.Failure -> {
+                        showErrorToasts(state)
                     }
                 }
             })
@@ -83,5 +73,9 @@ class NewsFragment : BaseFragment() {
             pageFragment.arguments = arguments
             return pageFragment
         }
+    }
+
+    override fun onNewsLinkClickListener(url: String) {
+        WebViewActivity.openWebViewActivity(requireContext(), url)
     }
 }

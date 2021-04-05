@@ -1,58 +1,62 @@
 package com.traidingviewer.ui.info.chart
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.gson.JsonSyntaxException
 import com.traidingviewer.data.api.model.Point
-import com.traidingviewer.viewmodel.BaseViewModel
+import com.traidingviewer.ui.base.BaseState
+import com.traidingviewer.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 import java.net.UnknownHostException
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
-sealed class ChartsState {
-    class Success(val charts: List<Point>) : ChartsState()
-    sealed class Failure : ChartsState() {
-        object LimitExceeded : Failure()
-        object UnknownHostException : Failure()
-        object OtherError : Failure()
-    }
-}
-
 class ChartViewModel @Inject constructor() : BaseViewModel() {
-    private val mutableChartsListLiveData: MutableLiveData<ChartsState> = MutableLiveData()
+    private val mutableChartsListLiveData: MutableLiveData<BaseState<List<Point>>> =
+        MutableLiveData()
     val chartsListLiveData = mutableChartsListLiveData
 
-    fun getCharts(time: String, symbol: String, pointsSize: Int) {
+    fun loadCharts(time: String, symbol: String, days: Int) {
         viewModelScope.launch {
             try {
                 val response = apiService.getCharts(time, symbol)
                 val chartsBody = response.body()
-                if (response.isSuccessful && chartsBody != null) {
-                    val listEntry = mutableListOf<Point>()
-                    if(chartsBody.size <= pointsSize) {
-                        for (i in chartsBody.indices) {
-                            listEntry.add(Point(chartsBody[i].date, chartsBody[i].close))
-                        }
-                    } else {
-                        for (i in 0 until pointsSize) {
-                            Log.e("points", chartsBody[i].date )
-                            listEntry.add(Point(chartsBody[i].date, chartsBody[i].close))
-                        }
+                val errorBody = response.errorBody()
+                when {
+                    response.code() == 403 && errorBody?.string()
+                        ?.contains(LIMIT_REACHED) == true -> {
+                        mutableChartsListLiveData.postValue(BaseState.Failure.LimitExceeded())
                     }
-                    mutableChartsListLiveData.postValue(ChartsState.Success(listEntry))
+                    response.isSuccessful && chartsBody != null -> {
+                        val listEntry = mutableListOf<Point>()
+                        var lastDate = chartsBody.first().date
+                        var daysCounter = 0
+                        for (chart in chartsBody) {
+                            if (!isSameDay(chart.date, lastDate)) {
+                                lastDate = chart.date
+                                daysCounter++
+                            }
+                            if (daysCounter < days) {
+                                listEntry.add(Point(chart.date, chart.close))
+                            } else {
+                                break
+                            }
+                        }
+                        mutableChartsListLiveData.postValue(BaseState.Success(listEntry))
+                    }
+                    else -> {
+                        mutableChartsListLiveData.postValue(BaseState.Failure.OtherError())
+                    }
                 }
             } catch (e: UnknownHostException) {
-                mutableChartsListLiveData.postValue(ChartsState.Failure.UnknownHostException)
-            } catch (e: JsonSyntaxException) {
-                mutableChartsListLiveData.postValue(ChartsState.Failure.LimitExceeded)
+                mutableChartsListLiveData.postValue(BaseState.Failure.UnknownHostException())
             } catch (e: Exception) {
-                mutableChartsListLiveData.postValue(ChartsState.Failure.OtherError)
+                mutableChartsListLiveData.postValue(BaseState.Failure.OtherError())
             }
         }
     }
 
-    fun getChartsDaily(symbol: String, from: String, to: String) {
+    fun loadChartsDaily(symbol: String, from: String, to: String) {
         viewModelScope.launch {
             try {
                 val response =
@@ -62,19 +66,39 @@ class ChartViewModel @Inject constructor() : BaseViewModel() {
                         apiService.getChartsDaily(symbol)
                     }
                 val chartsBody = response.body()?.historical
-                if (response.isSuccessful && chartsBody != null) {
-                    val listEntry = mutableListOf<Point>()
-                    for (i in chartsBody.indices)
-                        listEntry.add(Point(chartsBody[i].date, chartsBody[i].close))
-                    mutableChartsListLiveData.postValue(ChartsState.Success(listEntry))
+                val errorBody = response.errorBody()
+                when {
+                    response.code() == 403 && errorBody?.string()
+                        ?.contains(LIMIT_REACHED) == true -> {
+                        mutableChartsListLiveData.postValue(BaseState.Failure.LimitExceeded())
+                    }
+                    response.isSuccessful && chartsBody != null -> {
+                        val listEntry = mutableListOf<Point>()
+                        for (chart in chartsBody)
+                            listEntry.add(Point(chart.date, chart.close))
+                        mutableChartsListLiveData.postValue(BaseState.Success(listEntry))
+                    }
+                    else -> {
+                        mutableChartsListLiveData.postValue(BaseState.Failure.OtherError())
+                    }
                 }
             } catch (e: UnknownHostException) {
-                mutableChartsListLiveData.postValue(ChartsState.Failure.UnknownHostException)
-            } catch (e: JsonSyntaxException) {
-                mutableChartsListLiveData.postValue(ChartsState.Failure.LimitExceeded)
+                mutableChartsListLiveData.postValue(BaseState.Failure.UnknownHostException())
             } catch (e: Exception) {
-                mutableChartsListLiveData.postValue(ChartsState.Failure.OtherError)
+                mutableChartsListLiveData.postValue(BaseState.Failure.OtherError())
             }
+        }
+    }
+
+    fun isSameDay(currentDate: String, lastDate: String): Boolean {
+        val inputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale("EN"))
+        val outputDateFormat = SimpleDateFormat("dd", Locale("EN"))
+        val currentDay = inputDateFormat.parse(currentDate)
+        val lastDay = inputDateFormat.parse(lastDate)
+        return if (currentDay != null && lastDay != null) {
+            outputDateFormat.format(currentDay) == outputDateFormat.format(lastDay)
+        } else {
+            false
         }
     }
 }

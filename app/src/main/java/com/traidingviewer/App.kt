@@ -14,7 +14,12 @@ class App : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob())
 
     private val stockDatabase by lazy { StockDatabase.getDatabase(this) }
-    private val popularTickersDatabase by lazy { PopularTickersDatabase.getDatabase(this, applicationScope) }
+    private val popularTickersDatabase by lazy {
+        PopularTickersDatabase.getDatabase(
+            this,
+            applicationScope
+        )
+    }
     private val searchedTickersDatabase by lazy { SearchedTickersDatabase.getDatabase(this) }
     val favorites by lazy { stockDatabase.symbolDao() }
     val popularTickers by lazy { popularTickersDatabase.popularTickerDao() }

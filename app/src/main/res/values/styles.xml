@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/white</item>
@@ -67,6 +68,12 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="link">
+        <item name="android:textColor">@color/colorLink</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
     <style name="stockItemAdditionalPrice">
         <item name="android:textColor">@color/colorGreen</item>
         <item name="fontFamily">@font/montserrat_medium</item>
@@ -87,6 +94,18 @@
 
     <style name="chartButtons">
         <item name="android:textColor">@color/colorBlackLight</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="markerViewPrice">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily">@font/montserrat_medium</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="markerViewDate">
+        <item name="android:textColor">@color/colorGray</item>
         <item name="fontFamily">@font/montserrat_medium</item>
         <item name="android:textSize">12sp</item>
     </style>

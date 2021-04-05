@@ -24,24 +24,36 @@
 
             <ImageView
                 android:id="@+id/searchBackButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_margin="13dp"
+                android:layout_weight="1"
                 android:contentDescription="@string/find_company_or_ticker"
                 android:src="@drawable/ic_back" />
 
             <EditText
                 android:id="@+id/searchEditText"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="13dp"
+                android:layout_weight="10"
                 android:autofillHints=""
                 android:background="@color/white"
                 android:inputType="text"
                 android:textCursorDrawable="@null"
                 tools:ignore="LabelFor" />
+
+            <ProgressBar
+                android:id="@+id/searchProgressBar"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="13dp"
+                android:layout_weight="1"
+                android:indeterminateTint="@color/colorGray"
+                android:visibility="gone" />
 
         </LinearLayout>
 

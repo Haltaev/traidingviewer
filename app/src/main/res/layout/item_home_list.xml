@@ -10,76 +10,70 @@
     app:cardCornerRadius="20dp"
     app:cardElevation="0dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="8dp">
+        android:layout_margin="12dp">
 
         <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/homeListIcon"
             android:layout_width="52dp"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
             android:maxWidth="52dp"
             android:maxHeight="52dp"
             android:src="@drawable/empty_image"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:riv_corner_radius="12dp" />
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/homeListTitle"
+            style="@style/stockItemSymbolAndPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignTop="@id/homeListPrice"
             android:layout_marginStart="12dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/homeListIcon"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_toEndOf="@id/homeListIcon"
+            android:drawablePadding="6dp"
+            app:drawableEndCompat="@drawable/selector_favourite"
+            tools:text="YNDX" />
 
-            <TextView
-                android:id="@+id/homeListTitle"
-                style="@style/stockItemSymbolAndPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="6dp"
-                app:drawableEndCompat="@drawable/selector_favourite"
-                tools:text="YNDX" />
-
-            <TextView
-                android:id="@+id/homeListName"
-                style="@style/stockItemName"
-                android:layout_width="180dp"
-                android:layout_height="wrap_content"
-                tools:text="Yandex.LLC" />
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/homeListName"
+            style="@style/stockItemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_alignBottom="@id/homeListPriceChanges"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@id/homeListPriceChanges"
+            android:layout_toEndOf="@id/homeListIcon"
+            android:ellipsize="end"
+            android:maxLines="1"
+            tools:text="Yandex.LLC" />
 
-            <TextView
-                android:id="@+id/homeListPrice"
-                style="@style/stockItemSymbolAndPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                tools:text="4764.6 p" />
+        <TextView
+            android:id="@+id/homeListPrice"
+            style="@style/stockItemSymbolAndPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="6dp"
+            android:gravity="end"
+            tools:text="4764.6 p" />
 
-            <TextView
-                android:id="@+id/homeListPriceChanges"
-                style="@style/stockItemAdditionalPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="+56 p (1.15%)" />
+        <TextView
+            android:id="@+id/homeListPriceChanges"
+            style="@style/stockItemAdditionalPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="6dp"
+            android:gravity="end"
+            tools:text="+56 p (1.15%)" />
 
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
