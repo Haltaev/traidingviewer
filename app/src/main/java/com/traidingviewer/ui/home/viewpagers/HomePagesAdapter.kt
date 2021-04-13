@@ -1,14 +1,18 @@
 package com.traidingviewer.ui.home.viewpagers
 
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.traidingviewer.R
 import com.traidingviewer.data.api.model.HomeStock
+import com.traidingviewer.utils.ConvertUtils.dpToPx
 import kotlinx.android.synthetic.main.item_home_list.view.*
+import kotlinx.android.synthetic.main.view_progress.view.*
 
 class HomePagesAdapter(
     private val items: List<HomeStock>,
@@ -62,6 +66,15 @@ class HomePagesAdapter(
                     notifyItemChanged(position)
                     callback.onFavoriteStarClickListener(item, item.isFavorite)
                 }
+            } else {
+                progressBar.visibility = View.VISIBLE
+                val params = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    dpToPx(26, context)
+                ).apply {
+                    gravity = Gravity.CENTER
+                }
+                progressBar.layoutParams = params
             }
         }
     }
