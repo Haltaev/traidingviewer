@@ -1,6 +1,5 @@
 package com.traidingviewer.ui.search
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.traidingviewer.data.api.model.HomeStock
@@ -10,7 +9,7 @@ import com.traidingviewer.ui.base.BaseViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SearchViewModel @Inject constructor(var context: Context) : BaseViewModel() {
+class SearchViewModel @Inject constructor() : BaseViewModel() {
     private val mutableSearchedStockLiveData: MutableLiveData<BaseState<List<HomeStock>>> =
         MutableLiveData()
     val searchedStockLiveData = mutableSearchedStockLiveData
